@@ -24,6 +24,8 @@
 
 		void Start () {
 			InitializeLuaState ();
+
+			luaState.setObject ("self", gameObject);
 			luaState.doString (code);
 
 			updateFunc = (LuaFunction) luaState ["update"];
