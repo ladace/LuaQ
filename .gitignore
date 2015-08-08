@@ -4,8 +4,12 @@ Temp
 UnityVS
 AssetStoreTools
 obj/*
+Assets/Test.unity
+Assets/Test.unity.meta
 /Assets/AssetStoreTools.meta
 /Assets/UnityVS.meta
 /Assets/Slua/LuaObject
+/Assets/Slua/LuaObject.meta
 /ProjectSettings
 /*.csproj
+*.sln
