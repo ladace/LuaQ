@@ -9,6 +9,13 @@
 
 	[AddComponentMenu("LuaQ/Local Script")]
 	public class LocalScript : MonoBehaviour {
+		[System.Serializable]
+		public struct Variable {
+			public string name;
+			public GenericValue value;
+		}
+
+		public Variable[] variables;
 		[TextArea(20, 30)]
 		public string code;
 
@@ -22,10 +29,12 @@
 			LuaState.pcall(luaState.L, Utils.init);
 		}
 
-		void Start () {
+		void Awake () {
 			InitializeLuaState ();
 
 			luaState.setObject ("self", gameObject);
+			OnLoadVariables ();
+
 			luaState.doString (code);
 
 			updateFunc = (LuaFunction) luaState ["update"];
@@ -34,6 +43,12 @@
 		void Update () {
 			if (updateFunc != null)
 				CallFunction (updateFunc);
+		}
+
+		private void OnLoadVariables () {
+			foreach (var variable in variables) {
+				luaState.setObject(variable.name, variable.value.GetValue());
+			}
 		}
 
 		private void CallFunction (LuaFunction func) {
