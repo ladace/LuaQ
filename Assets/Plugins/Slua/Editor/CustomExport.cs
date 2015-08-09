@@ -46,11 +46,15 @@ namespace SLua
 			var txt = AssetDatabase.LoadAssetAtPath<UnityEngine.TextAsset> (path);
 			if (txt != null) {
 				var types = txt.text.Split ('\n');
-				Assembly a1 = Assembly.Load ("Assembly-CSharp"), a2 = Assembly.Load ("Assembly-CSharp-firstpass");
+				Assembly a1 = null, a2 = null;
+				try {
+					a2 = Assembly.Load ("Assembly-CSharp-firstpass");
+					a1 = Assembly.Load ("Assembly-CSharp");
+				} catch (System.IO.FileNotFoundException) {}
 				foreach (var type in types) {
 					if (type == "")
 						continue;
-					Type t = a1.GetType (type);
+					Type t = a1 == null ? null : a1.GetType (type);
 					if (t == null)
 						t = a2.GetType (type);
 					if (t != null) {

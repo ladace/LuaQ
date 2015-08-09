@@ -213,9 +213,15 @@ namespace SLua
 			};
 			
 			// export self-dll
-			Assembly assembly = Assembly.Load("Assembly-CSharp");
-			List<Type> types = new List<Type> (assembly.GetExportedTypes());
-			types = types.Concat(Assembly.Load ("Assembly-CSharp-firstpass").GetExportedTypes()).ToList<Type>();
+			List<Type> types;
+			try {
+				Assembly assembly = Assembly.Load("Assembly-CSharp");
+				types = new List<Type> (assembly.GetExportedTypes());
+				types = types.Concat(Assembly.Load ("Assembly-CSharp-firstpass").GetExportedTypes()).ToList<Type>();
+			} catch (FileNotFoundException) {
+				types = Assembly.Load ("Assembly-CSharp-firstpass").GetExportedTypes().ToList<Type>();
+			}
+
 			
 			foreach (Type t in types)
 			{
