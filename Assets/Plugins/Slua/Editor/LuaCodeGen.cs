@@ -241,10 +241,10 @@ namespace SLua
 			}
 
 			List<Type> cust = new List<Type>();
-			Assembly assembly = Assembly.Load("Assembly-CSharp");
-			Type[] types = assembly.GetExportedTypes();
 			List<string> assemblyList = new List<string>();
 			CustomExport.OnAddCustomAssembly(ref assemblyList);
+			Assembly assembly;
+			Type[] types;
 			foreach (string assemblyItem in assemblyList)
 			{
 				assembly = Assembly.Load(assemblyItem);

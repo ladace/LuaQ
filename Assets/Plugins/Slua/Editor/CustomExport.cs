@@ -24,6 +24,8 @@ namespace SLua
 {
 	using System.Collections.Generic;
 	using System;
+	using UnityEditor;
+	using System.Reflection;
 
 	public class CustomExport
 	{
@@ -40,6 +42,24 @@ namespace SLua
 			// add( type, typename)
 			// type is what you want to export
 			// typename used for simplify generic type name or rename, like List<int> named to "ListInt", if not a generic type keep typename as null or rename as new type name
+			var path = "Assets/Plugins/SLuaExportedClasses.txt";
+			var txt = AssetDatabase.LoadAssetAtPath<UnityEngine.TextAsset> (path);
+			if (txt != null) {
+				var types = txt.text.Split ('\n');
+				Assembly a1 = Assembly.Load ("Assembly-CSharp"), a2 = Assembly.Load ("Assembly-CSharp-firstpass");
+				foreach (var type in types) {
+					if (type == "")
+						continue;
+					Type t = a1.GetType (type);
+					if (t == null)
+						t = a2.GetType (type);
+					if (t != null) {
+						add (t, null);
+					}
+				}
+			} else {
+				UnityEngine.Debug.Log ("List your custom classes under \"" + path + "\"");
+			}
 		}
 
 		public static void OnAddCustomAssembly(ref List<string> list)
