@@ -3,12 +3,13 @@
 	using UnityEngine;
 	using System;
 	using System.Reflection;
+	using System.Collections;
 	using System.Collections.Generic;
 	using SLua;
 	using LuaInterface;
 
 	[AddComponentMenu("LuaQ/Local Script")]
-	public class LocalScript : MonoBehaviour {
+	public class LocalScript : LocalScriptBase {
 		[System.Serializable]
 		public struct Variable {
 			public string name;
@@ -48,6 +49,15 @@
 				CallFunction ((LuaFunction)func, args);
 			else
 				Debug.Log ("Cannot find method \"" + methodName + "\".");
+		}
+
+		public override void delayInvoke (string methodName, float delay) {
+			StartCoroutine (DelayInvokeLuaRoutine (methodName, delay));
+		}
+
+		private IEnumerator DelayInvokeLuaRoutine (string methodName, float delay) {
+			yield return new WaitForSeconds (delay);
+			InvokeLua (methodName, delay);
 		}
 
 		private void OnLoadVariables () {

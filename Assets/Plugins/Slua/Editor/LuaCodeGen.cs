@@ -32,8 +32,8 @@ namespace SLua
 	using LuaInterface;
 	using System.Text;
 	using System.Text.RegularExpressions;
-
-
+	using System.Linq;
+	
 
     public class LuaCodeGen : MonoBehaviour
 	{
@@ -214,7 +214,8 @@ namespace SLua
 			
 			// export self-dll
 			Assembly assembly = Assembly.Load("Assembly-CSharp");
-			Type[] types = assembly.GetExportedTypes();
+			List<Type> types = new List<Type> (assembly.GetExportedTypes());
+			types = types.Concat(Assembly.Load ("Assembly-CSharp-firstpass").GetExportedTypes()).ToList<Type>();
 			
 			foreach (Type t in types)
 			{
