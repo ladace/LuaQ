@@ -29,20 +29,25 @@
 			LuaState.pcall(luaState.L, Utils.init);
 		}
 
-		void Awake () {
+		void OnEnable () {
 			InitializeLuaState ();
-
-			luaState.setObject ("self", gameObject);
+			luaState.setObject ("self", this);
 			OnLoadVariables ();
-
-			luaState.doString (code);
-
-			updateFunc = (LuaFunction) luaState ["update"];
+			luaState.doString (code);	
+			updateFunc = (LuaFunction)luaState ["update"];
 		}
 
 		void Update () {
 			if (updateFunc != null)
 				CallFunction (updateFunc);
+		}
+
+		public void InvokeLua (string methodName, params object[] args) {
+			var func = luaState [methodName];
+			if (func != null)
+				CallFunction ((LuaFunction)func, args);
+			else
+				Debug.Log ("Cannot find method \"" + methodName + "\".");
 		}
 
 		private void OnLoadVariables () {
@@ -51,7 +56,7 @@
 			}
 		}
 
-		private void CallFunction (LuaFunction func) {
+		private void CallFunction (LuaFunction func, params object[] args) {
 			
 			if (!LuaState.get(luaState.L).isMainThread())
 			{
@@ -63,7 +68,10 @@
 			LuaDLL.lua_pushcclosure(luaState.L, errorCSFunc, 1);
 			int errorFunc = LuaDLL.lua_gettop(luaState.L);
 
-			func.pcall (0, errorFunc);
+			foreach (var arg in args) {
+				LuaObject.pushVar (luaState.L, arg);
+			}
+			func.pcall (args.Length, errorFunc);
 			
 			LuaDLL.lua_remove(luaState.L, errorFunc);
 		}
